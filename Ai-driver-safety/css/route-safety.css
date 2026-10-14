@@ -1,0 +1,436 @@
+/* =====================================================================
+   SMART ROUTE SAFETY & GPS MONITORING STYLES
+   Route Planning, Multi-Factor Scoring, Weather Hazards & Driver Recommendations
+   ===================================================================== */
+
+/* Route Planner Panel */
+.route-planner-box {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.route-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon .input-icon {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: var(--cyan-primary);
+  pointer-events: none;
+}
+
+.route-text-input {
+  width: 100%;
+  background: rgba(10, 15, 26, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px 9px 36px;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  transition: var(--transition-smooth);
+}
+
+.route-text-input:focus {
+  outline: none;
+  border-color: var(--cyan-primary);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
+}
+
+.quick-preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.preset-chip {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.preset-chip:hover {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: var(--cyan-primary);
+  color: var(--text-main);
+}
+
+/* Route Alternatives Cards */
+.route-alternatives-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.route-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.route-card:hover {
+  background: rgba(26, 34, 52, 0.85);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.route-card.selected {
+  border-color: var(--cyan-primary);
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(15, 23, 42, 0.9));
+  box-shadow: 0 0 18px rgba(6, 182, 212, 0.2);
+}
+
+.route-card.selected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--cyan-primary);
+}
+
+.route-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.route-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.safety-score-pill {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.score-high {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid var(--emerald-safe);
+  color: #34D399;
+}
+
+.score-med {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid var(--amber-warn);
+  color: #FBBF24;
+}
+
+.score-low {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid var(--crimson-danger);
+  color: #F87171;
+}
+
+.route-quick-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  margin-bottom: 10px;
+}
+
+.route-quick-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Multi-Factor Breakdown Bars */
+.factor-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px;
+}
+
+.factor-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.74rem;
+}
+
+.factor-label {
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.factor-score-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 140px;
+}
+
+.factor-score-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.factor-score-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.3s;
+}
+
+.factor-score-val {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  width: 28px;
+  text-align: right;
+}
+
+/* Why Route Receives Score (Explanation Drawer) */
+.score-explanation-box {
+  background: rgba(10, 15, 26, 0.6);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.score-explanation-box .penalty-tag {
+  color: #F87171;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.score-explanation-box .bonus-tag {
+  color: #34D399;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+/* Weather & Road Condition Panels */
+.weather-road-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.weather-stat-box {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  text-align: center;
+}
+
+.weather-stat-box .title {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.weather-stat-box .value {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+/* Dynamic Simulation Scenario Selectors */
+.scenario-selector-box {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.scenario-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--cyan-primary);
+  letter-spacing: 0.5px;
+}
+
+.scenario-chips {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.scenario-btn {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition-smooth);
+}
+
+.scenario-btn:hover {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: var(--text-main);
+}
+
+.scenario-btn.active {
+  background: rgba(6, 182, 212, 0.18);
+  border-color: var(--cyan-primary);
+  color: #FFF;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+}
+
+/* Custom Interactive Sliders for Route Hazards */
+.interactive-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.slider-header .val {
+  font-family: var(--font-mono);
+  color: var(--cyan-primary);
+  font-weight: 600;
+}
+
+input[type="range"].hazard-slider {
+  width: 100%;
+  height: 5px;
+  background: #1E293B;
+  border-radius: var(--radius-full);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+input[type="range"].hazard-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--cyan-primary);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--cyan-primary);
+}
+
+/* Driver Safety Recommendations */
+.driver-advisory-card {
+  background: linear-gradient(135deg, rgba(20, 27, 45, 0.8), rgba(15, 23, 42, 0.95));
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.advisory-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(10, 15, 26, 0.5);
+  border-left: 3px solid var(--cyan-primary);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.advisory-item.warn {
+  border-left-color: var(--amber-warn);
+}
+
+.advisory-item.urgent {
+  border-left-color: var(--crimson-danger);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.advisory-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.advisory-disclaimer-pill {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  line-height: 1.4;
+}

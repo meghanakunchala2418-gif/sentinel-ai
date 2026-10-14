@@ -1,0 +1,428 @@
+/* =====================================================================
+   DASHBOARD & DRIVER MONITORING STYLES
+   Driver HUD, Fatigue Vision, Emergency Countdown, Incident Logging
+   ===================================================================== */
+
+/* Driver Camera HUD */
+.driver-camera-card {
+  position: relative;
+  background: #000;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#driverVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+#driverCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.simulated-face-graphic {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hud-reticle {
+  position: absolute;
+  inset: 15px;
+  border: 1px dashed rgba(6, 182, 212, 0.3);
+  border-radius: var(--radius-md);
+  pointer-events: none;
+}
+
+.hud-reticle::before, .hud-reticle::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--cyan-primary);
+}
+.hud-reticle::before { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+.hud-reticle::after { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+.face-mesh-wireframe {
+  width: 140px;
+  height: 180px;
+  border: 2px solid rgba(56, 189, 248, 0.4);
+  border-radius: 70px 70px 60px 60px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  padding: 30px 10px;
+  transition: all 0.3s ease;
+}
+
+.face-mesh-wireframe.drowsy {
+  border-color: var(--amber-warn);
+  transform: translateY(12px) rotate(3deg);
+}
+
+.face-mesh-wireframe.critical {
+  border-color: var(--crimson-danger);
+  transform: translateY(24px) rotate(8deg);
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.5);
+}
+
+.sim-eyes {
+  display: flex;
+  gap: 30px;
+}
+
+.sim-eye {
+  width: 26px;
+  height: 14px;
+  border: 2px solid var(--cyan-primary);
+  border-radius: 50%;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.sim-eye.closed {
+  height: 2px;
+  background: var(--crimson-danger);
+  border-color: var(--crimson-danger);
+}
+
+.sim-pupil {
+  width: 8px;
+  height: 8px;
+  background: var(--cyan-primary);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.2s;
+}
+
+.sim-mouth {
+  width: 32px;
+  height: 8px;
+  border: 2px solid var(--cyan-primary);
+  border-radius: 0 0 16px 16px;
+  transition: all 0.3s;
+}
+
+.sim-mouth.yawning {
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: var(--amber-warn);
+}
+
+.hud-overlay-text {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--cyan-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hud-status-badge {
+  position: absolute;
+  bottom: 12px;
+  right: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid var(--emerald-safe);
+  color: var(--emerald-safe);
+  font-weight: 700;
+}
+
+.hud-status-badge.drowsy {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: var(--amber-warn);
+  color: var(--amber-warn);
+}
+
+.hud-status-badge.critical {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: var(--crimson-danger);
+  color: #FFAAAA;
+  animation: pulse-fast 0.6s infinite;
+}
+
+/* Driver Telemetry Grid */
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.metric-box {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-box .metric-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-box .metric-value {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+.metric-box .metric-sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* Driver Simulation Interactive Controls */
+.driver-sim-controls {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.driver-sim-controls .controls-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--cyan-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sim-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Emergency Countdown Modal & Banner */
+.emergency-banner-alert {
+  display: none;
+  background: linear-gradient(90deg, #7F1D1D, #991B1B, #7F1D1D);
+  border: 2px solid #EF4444;
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  color: #FFF;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
+  animation: banner-strobe 1s infinite alternate;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.emergency-banner-alert.active {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@keyframes banner-strobe {
+  from { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); border-color: #DC2626; }
+  to { box-shadow: 0 0 40px rgba(239, 68, 68, 0.9); border-color: #F87171; }
+}
+
+.countdown-timer-large {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #FFF;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-shadow: 0 0 10px #EF4444;
+}
+
+/* Composite Trip-Risk Summary Card */
+.composite-risk-card {
+  background: linear-gradient(145deg, rgba(18, 24, 38, 0.9), rgba(15, 23, 42, 0.95));
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.risk-dual-meters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.risk-subcard {
+  background: rgba(10, 15, 26, 0.55);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.risk-subcard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.risk-subcard-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.risk-meter-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.risk-meter-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+
+.composite-verdict {
+  background: rgba(15, 23, 42, 0.7);
+  border-left: 4px solid var(--emerald-safe);
+  padding: 12px 16px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.composite-verdict.warning {
+  border-left-color: var(--amber-warn);
+}
+
+.composite-verdict.critical {
+  border-left-color: var(--crimson-danger);
+}
+
+.composite-verdict-title {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.composite-verdict-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Incident Log Table */
+.incident-table-wrapper {
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: rgba(10, 15, 26, 0.4);
+}
+
+.incident-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  text-align: left;
+}
+
+.incident-table th {
+  background: rgba(15, 23, 42, 0.85);
+  color: var(--text-secondary);
+  font-weight: 600;
+  padding: 10px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.incident-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--text-main);
+}
+
+.incident-table tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.log-badge-emergency {
+  background: rgba(239, 68, 68, 0.2);
+  color: #F87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.log-badge-warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #FBBF24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.log-badge-info {
+  background: rgba(6, 182, 212, 0.2);
+  color: #38BDF8;
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}

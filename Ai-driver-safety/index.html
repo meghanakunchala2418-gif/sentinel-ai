@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENTINEL AI — Fleet Safety & Smart Route Control</title>
+  
+  <!-- Favicon SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2306B6D4'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
+
+  <!-- Local Leaflet CSS & Custom Themes -->
+  <link rel="stylesheet" href="css/leaflet.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/route-safety.css">
+  <link rel="stylesheet" href="css/dark-map.css">
+  <link rel="stylesheet" href="css/navigation.css">
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- ===================================================================
+         DESKTOP & MOBILE SIDEBAR NAVIGATION
+         =================================================================== -->
+    <aside class="app-sidebar" id="appSidebar">
+      <!-- Brand Header -->
+      <div class="sidebar-brand">
+        <div class="brand-logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title" style="font-size: 1rem;">SENTINEL AI</div>
+          <div class="brand-sub" style="font-size: 0.65rem;">Fleet Safety Hub</div>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Navigation Views</div>
+
+        <!-- 1. Home Dashboard -->
+        <button class="nav-item active" data-screen="home">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </span>
+          <span class="nav-label">Home Dashboard</span>
+        </button>
+
+        <!-- 2. Live GPS Tracking -->
+        <button class="nav-item" data-screen="gps">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          </span>
+          <span class="nav-label">Live GPS Tracking</span>
+        </button>
+
+        <!-- 3. Driver Safety -->
+        <button class="nav-item" data-screen="driver">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </span>
+          <span class="nav-label">Driver Safety</span>
+        </button>
+
+        <!-- 4. Route Planning -->
+        <button class="nav-item" data-screen="routes">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          </span>
+          <span class="nav-label">Route Planning</span>
+        </button>
+
+        <!-- 5. Weather & Hazards -->
+        <button class="nav-item" data-screen="weather">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+          </span>
+          <span class="nav-label">Weather & Hazards</span>
+        </button>
+
+        <!-- 6. Incidents & Reports -->
+        <button class="nav-item" data-screen="incidents">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </span>
+          <span class="nav-label">Incidents & Reports</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Footer Controls -->
+      <div class="sidebar-footer">
+        <button id="btnOpenApiModal" class="btn btn-glass btn-sm" style="width: 100%; justify-content: flex-start;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          API & Services
+        </button>
+
+        <button id="btnOpenDisclaimersModal" class="btn btn-glass btn-sm" style="width: 100%; justify-content: flex-start;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Protocols
+        </button>
+
+        <div style="font-size: 0.68rem; color: var(--text-muted); text-align: center; margin-top: 2px;">
+          SENTINEL AI v2.0 • Fleet Dispatch
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile Drawer Backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- ===================================================================
+         APPLICATION MAIN BODY (Header + Screens)
+         =================================================================== -->
+    <div class="app-main">
+
+      <!-- Compact Top Header -->
+      <header class="app-header">
+        <div class="header-left">
+          <!-- Mobile Hamburger Toggle -->
+          <button id="btnMobileNavToggle" class="mobile-nav-toggle" title="Toggle Navigation Menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+
+          <!-- Breadcrumb Navigation -->
+          <div class="breadcrumb-area">
+            <span class="breadcrumb-root">SENTINEL</span>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current" id="currentScreenTitle">Home Dashboard</span>
+          </div>
+        </div>
+
+        <!-- Telemetry Status Pills -->
+        <div class="header-telemetry" style="gap: 12px;">
+          <div class="telemetry-pill">
+            <span class="pulse-dot" id="headerPulseDot"></span>
+            <span class="label">BUS:</span>
+            <span style="font-weight: 700; color: #FFF;">BUS-104</span>
+          </div>
+
+          <div class="telemetry-pill" style="display: none;" id="headerGpsContainer">
+            <span class="label">GPS:</span>
+            <span id="headerGpsLabel" style="color: var(--cyan-primary);">SIMULATED FIX</span>
+          </div>
+
+          <div class="telemetry-pill">
+            <span class="label">TIME:</span>
+            <span id="headerClock" style="color: #F8FAFC;">00:00:00</span>
+          </div>
+
+          <div class="telemetry-pill">
+            <span class="label">UPTIME:</span>
+            <span id="headerUptime" style="color: var(--text-secondary);">00:00</span>
+          </div>
+        </div>
+
+        <!-- Emergency SOS Button (Always Accessible from Every Screen) -->
+        <button id="btnHeaderSos" class="btn btn-danger btn-sm" title="Trigger Emergency SOS Distress Broadcast">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          MANUAL SOS
+        </button>
+      </header>
+
+      <!-- Transparency & Simulation Disclaimer Bar -->
+      <div class="disclaimer-banner">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="disclaimer-badge">SIMULATED DATASET</span>
+          <span>Telemetry and safety scores are synthetically modeled for demonstration.</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="display: none;" class="desktop-only-note">Advisory Planning System • Does Not Control Vehicle Braking</span>
+          <span style="font-family: var(--font-mono); color: var(--cyan-primary);" id="routeLastUpdateTime">Updated just now</span>
+        </div>
+      </div>
+
+      <!-- 15-SECOND EMERGENCY COUNTDOWN STROBE ALERT (Global Across All Screens) -->
+      <div id="emergencyBannerAlert" class="emergency-banner-alert" style="margin: 12px 24px 0 24px;">
+        <!-- Populated dynamically by emergency-system.js -->
+      </div>
+
+      <!-- =================================================================
+           SCREENS VIEWPORT (Only 1 Active at a Time)
+           ================================================================= -->
+      <main class="screens-viewport">
+
+        <!-- ===============================================================
+             SCREEN 1: HOME DASHBOARD
+             =============================================================== -->
+        <div class="app-screen active" id="screen-home">
+          <div class="screen-header-bar">
+            <div class="screen-title-group">
+              <h2>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2.2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Fleet Operations Summary
+              </h2>
+              <div class="screen-subtitle">Real-time status overview of vehicle telemetry, driver alertness, and active route conditions</div>
+            </div>
+            <span class="panel-badge badge-live">SYSTEM ACTIVE</span>
+          </div>
+
+          <!-- Top Row: 4 Clean KPI Summary Cards -->
+          <div class="home-kpi-grid">
+            
+            <!-- Card 1: Vehicle & GPS Status -->
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-title">Vehicle & GPS</span>
+                <span class="kpi-icon-pill">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                </span>
+              </div>
+              <div>
+                <div class="kpi-val" id="homeKpiSpeed">54 km/h</div>
+                <div class="kpi-sub" id="homeKpiCoords">17.4399° N, 78.3908° E</div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-subtle); padding-top: 8px;">
+                <span class="panel-badge badge-simulated" id="homeKpiGpsStatus" style="font-size: 0.65rem;">SIMULATED FIX</span>
+                <button class="kpi-action-link" data-goto-screen="gps">Live Map →</button>
+              </div>
+            </div>
+
+            <!-- Card 2: Driver Fatigue Score -->
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-title">Driver Fatigue</span>
+                <span class="kpi-icon-pill">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </span>
+              </div>
+              <div>
+                <div class="kpi-val" id="homeKpiDriverFatigue">12%</div>
+                <div class="kpi-sub" id="homeKpiDriverSub">EAR: 0.32 • Blinks: 14 /min</div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-subtle); padding-top: 8px;">
+                <span class="panel-badge badge-live" id="homeKpiDriverStatus" style="font-size: 0.65rem;">ATTENTIVE</span>
+                <button class="kpi-action-link" data-goto-screen="driver">Driver HUD →</button>
+              </div>
+            </div>
+
+            <!-- Card 3: Route Safety Score -->
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-title">Route Safety Score</span>
+                <span class="kpi-icon-pill">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                </span>
+              </div>
+              <div>
+                <div class="kpi-val" id="homeKpiRouteScore" style="color: var(--emerald-safe);">88 / 100</div>
+                <div class="kpi-sub" id="homeKpiRouteName">NH-44 Express Highway</div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-subtle); padding-top: 8px;">
+                <span class="kpi-sub" id="homeKpiRouteSub">48.6 km • 45m est</span>
+                <button class="kpi-action-link" data-goto-screen="routes">Routes →</button>
+              </div>
+            </div>
+
+            <!-- Card 4: Weather & Hazards Summary -->
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-title">Weather & Hazards</span>
+                <span class="kpi-icon-pill">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+                </span>
+              </div>
+              <div>
+                <div class="kpi-val" id="homeKpiFlood" style="font-size: 1.25rem; color: #34D399;">LOW RISK</div>
+                <div class="kpi-sub">Rain: <span id="homeKpiRain">2.4 mm/h</span> • Vis: <span id="homeKpiVis">4800 m</span></div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-subtle); padding-top: 8px;">
+                <span class="kpi-sub">0 Active Closures</span>
+                <button class="kpi-action-link" data-goto-screen="weather">Weather →</button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Middle Section: Composite Trip Risk Summary Matrix -->
+          <section class="glass-panel" style="margin-bottom: 24px;">
+            <div class="panel-header">
+              <div class="panel-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Overall Trip-Risk Summary Matrix
+              </div>
+              <span class="panel-badge badge-live">INTEGRATED AUDIT</span>
+            </div>
+
+            <div class="panel-body">
+              <!-- Dual Meters displaying Driver and Route risks separately -->
+              <div class="risk-dual-meters">
+                <!-- Driver Risk Subcard -->
+                <div class="risk-subcard">
+                  <div class="risk-subcard-header">
+                    <span class="risk-subcard-title">Driver Fatigue Risk</span>
+                    <span id="compositeDriverGrade" style="font-weight: 800; font-size: 0.8rem; color: var(--emerald-safe);">LOW</span>
+                  </div>
+                  <div class="risk-meter-bar">
+                    <div class="risk-meter-fill" id="compositeDriverBar" style="width: 12%; background: var(--emerald-safe);"></div>
+                  </div>
+                  <div id="compositeDriverVal" style="font-size: 0.72rem; color: var(--text-secondary); font-family: var(--font-mono);">Fatigue: 12%</div>
+                </div>
+
+                <!-- Route Risk Subcard -->
+                <div class="risk-subcard">
+                  <div class="risk-subcard-header">
+                    <span class="risk-subcard-title">Route Safety Score</span>
+                    <span id="compositeRouteGrade" style="font-weight: 800; font-size: 0.8rem; color: var(--emerald-safe);">88 / 100</span>
+                  </div>
+                  <div class="risk-meter-bar">
+                    <div class="risk-meter-fill" id="compositeRouteBar" style="width: 88%; background: var(--emerald-safe);"></div>
+                  </div>
+                  <div id="compositeRouteVal" style="font-size: 0.72rem; color: var(--text-secondary); font-family: var(--font-mono);">Safety: 88/100</div>
+                </div>
+              </div>
+
+              <!-- Composite Overall Verdict -->
+              <div class="composite-verdict" id="compositeVerdictBox">
+                <div class="composite-verdict-title" id="compositeVerdictTitle">OPTIMAL OVERALL TRIP STATUS</div>
+                <div class="composite-verdict-desc" id="compositeVerdictDesc">
+                  Driver is alert and attentive. Route conditions are favorable with low hazard indicators.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Bottom Row: Contextual Driver Recommendations Quick Preview -->
+          <div class="home-split-row">
+            <!-- Short Recommendations Card -->
+            <section class="glass-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  Driver Advisory Highlights
+                </div>
+                <button class="kpi-action-link" data-goto-screen="incidents">Full Reports →</button>
+              </div>
+
+              <div class="panel-body">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div class="advisory-item">
+                    <span class="advisory-icon">🛡️</span>
+                    <div>Corridor conditions optimal on active route. Maintain standard defensive driving and scheduled check-ins.</div>
+                  </div>
+                  <div class="advisory-item">
+                    <span class="advisory-icon">🅿️</span>
+                    <div>Authorized Safe Haven: <b>Highway Rest Bay Exit 14</b> (km 32.4) equipped with emergency telephone and service depot.</div>
+                  </div>
+                </div>
+                <div class="advisory-disclaimer-pill" style="margin-top: 6px;">
+                  <b>Driver Safety Notice:</b> Suggestions are advisory only. Drivers must never interact with screens while operating the vehicle.
+                </div>
+              </div>
+            </section>
+
+            <!-- Quick Navigation Shortcuts Card -->
+            <section class="glass-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Quick Module Access
+                </div>
+                <span class="panel-badge badge-simulated">SHORTCUTS</span>
+              </div>
+
+              <div class="panel-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                  <button class="btn btn-glass" style="justify-content: flex-start;" data-goto-screen="gps">
+                    <span style="font-size: 1.1rem;">🗺️</span> Fullscreen Map
+                  </button>
+                  <button class="btn btn-glass" style="justify-content: flex-start;" data-goto-screen="driver">
+                    <span style="font-size: 1.1rem;">👁️</span> Driver Camera
+                  </button>
+                  <button class="btn btn-glass" style="justify-content: flex-start;" data-goto-screen="routes">
+                    <span style="font-size: 1.1rem;">🛣️</span> Compare Routes
+                  </button>
+                  <button class="btn btn-glass" style="justify-content: flex-start;" data-goto-screen="weather">
+                    <span style="font-size: 1.1rem;">🌦️</span> Weather Sliders
+                  </button>
+                  <button class="btn btn-glass" style="justify-content: flex-start;" data-goto-screen="incidents">
+                    <span style="font-size: 1.1rem;">📋</span> Incident Audit
+                  </button>
+                  <button class="btn btn-glass" style="justify-content: flex-start;" onclick="document.getElementById('modalApiGuide').classList.add('active');">
+                    <span style="font-size: 1.1rem;">🌐</span> API Guide
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- ===============================================================
+             SCREEN 2: LIVE GPS TRACKING
+             =============================================================== -->
+        <div class="app-screen" id="screen-gps">
+          <div class="screen-header-bar">
+            <div class="screen-title-group">
+              <h2>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2.2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                Live GPS & Hazardous Corridor Map
+              </h2>
+              <div class="screen-subtitle">Real-time vehicle movement, speed telemetry, corridor hazards, and opt-in device GPS</div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button id="btnRecenterBus" class="btn btn-glass btn-sm" title="Center map on simulated bus">Center Bus</button>
+              <button id="btnAcquireDeviceLocation" class="btn btn-cyan btn-sm" title="Acquire device browser location (Requires Permission)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><circle cx="12" cy="12" r="3"/></svg>
+                Acquire Device GPS
+              </button>
+            </div>
+          </div>
+
+          <!-- Prominent Interactive Map Container -->
+          <div class="map-card-wrapper" style="height: 640px;">
+            <div id="leafletMap"></div>
+
+            <!-- Top Right Map GPS Telemetry Overlay -->
+            <div class="map-hud-top-right">
+              <div class="gps-telemetry-hud">
+                <div class="gps-hud-header">
+                  <span class="label">GPS TELEMETRY</span>
+                  <div class="gps-status-indicator simulated" id="gpsStatusMode">SIMULATED TELEMETRY</div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <div class="gps-coords-row">
+                    <span class="label">LAT:</span>
+                    <span id="gpsValLat">17.4399° N</span>
+                  </div>
+                  <div class="gps-coords-row">
+                    <span class="label">LNG:</span>
+                    <span id="gpsValLng">78.3908° E</span>
+                  </div>
+                  <div class="gps-coords-row">
+                    <span class="label">SPEED:</span>
+                    <span id="gpsValSpeed">54 km/h</span>
+                  </div>
+                  <div class="gps-coords-row">
+                    <span class="label">HEADING:</span>
+                    <span id="gpsValHeading">345° NNW</span>
+                  </div>
+                  <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; border-top: 1px solid var(--border-subtle); padding-top: 4px;">
+                    Simulated bus telemetry. Not real vehicle GPS.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Map Playback & Route Scrubber HUD -->
+            <div class="map-hud-bottom">
+              <div class="playback-controls">
+                <button id="btnMapPlayPause" class="playback-btn" title="Pause / Resume Telemetry Animation">⏸️</button>
+                <button id="btnMapSpeed" class="playback-btn" style="font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;" title="Cycle Speed Multiplier">1x</button>
+              </div>
+
+              <div class="route-progress-wrap">
+                <div class="route-progress-label">
+                  <span>ACTIVE CORRIDOR TRANSIT</span>
+                  <span id="routeProgressPct">15% Completed</span>
+                </div>
+                <div class="progress-track" id="routeProgressTrack" title="Click anywhere along bar to scrub bus location">
+                  <div class="progress-fill" id="routeProgressFill" style="width: 15%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Telemetry Card -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 16px;">
+            <div class="metric-box">
+              <span class="metric-label">Vehicle Marker</span>
+              <span class="metric-value">BUS-104</span>
+              <span class="metric-sub">Volvo B11R Intercity</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Satellite Fix</span>
+              <span class="metric-value" style="color: var(--cyan-primary);">3D DGPS</span>
+              <span class="metric-sub">Accuracy: ±3.2m</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Corridor Status</span>
+              <span class="metric-value" style="color: var(--emerald-safe);">Clear</span>
+              <span class="metric-sub">NH-44 Express Highway</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Active Hazards on Map</span>
+              <span class="metric-value">1 Marker</span>
+              <span class="metric-sub">Expansion Joint km 32.4</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===============================================================
+             SCREEN 3: DRIVER SAFETY
+             =============================================================== -->
+        <div class="app-screen" id="screen-driver">
+          <div class="screen-header-bar">
+            <div class="screen-title-group">
+              <h2>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2.2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                Driver Safety & Vision Analytics
+              </h2>
+              <div class="screen-subtitle">Real-time Eye Aspect Ratio (EAR), blink duration, micro-sleep detection, and fatigue classification</div>
+            </div>
+            <span class="panel-badge badge-simulated" id="driverModeBadge">AI SIMULATED</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            
+            <!-- Left Column: Vision HUD & Simulation Controls -->
+            <section class="glass-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  Driver Vision Monitor
+                </div>
+                <div class="hud-status-badge" id="driverStatusBadge">ATTENTIVE (SAFE)</div>
+              </div>
+
+              <div class="panel-body">
+                <!-- Viewfinder Camera Card -->
+                <div class="driver-camera-card" style="aspect-ratio: 16 / 10;">
+                  <video id="driverVideo" autoplay playsinline muted></video>
+                  
+                  <!-- Simulated AI Wireframe Visualizer -->
+                  <div class="simulated-face-graphic" id="simulatedFaceGraphic">
+                    <div class="hud-reticle"></div>
+
+                    <div class="face-mesh-wireframe" id="faceWireframe">
+                      <div class="sim-eyes">
+                        <div class="sim-eye" id="leftEye"><div class="sim-pupil"></div></div>
+                        <div class="sim-eye" id="rightEye"><div class="sim-pupil"></div></div>
+                      </div>
+                      <div class="sim-mouth" id="mouth"></div>
+                    </div>
+
+                    <div class="hud-overlay-text">
+                      <div>AI EYE-TRACK: ACTIVE</div>
+                      <div>YAWN DETECT: READY</div>
+                      <div>HEAD-POSE: 3D VECTOR</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Driver Simulation Interactive Controls -->
+                <div class="driver-sim-controls">
+                  <div class="controls-title">
+                    <span>Driver State Simulator</span>
+                    <span style="font-size: 0.65rem; color: var(--text-muted);">TEST TRIGGERS</span>
+                  </div>
+
+                  <div class="sim-buttons-row">
+                    <button id="btnSimNormal" class="btn btn-glass btn-sm" style="color: #34D399;">Attentive</button>
+                    <button id="btnSimDrowsy" class="btn btn-glass btn-sm" style="color: #FBBF24;">Drowsy / Yawn</button>
+                    <button id="btnSimCritical" class="btn btn-glass btn-sm" style="color: #F87171;">Critical Micro-Sleep</button>
+                    <button id="btnSimDistracted" class="btn btn-glass btn-sm" style="color: #60A5FA;">Distracted</button>
+                  </div>
+
+                  <button id="btnToggleCamera" class="btn btn-cyan btn-sm" style="width: 100%; margin-top: 4px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    Enable Live Webcam
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Right Column: Driver Telemetry Grid & Vehicle Hardware -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              
+              <!-- Driver Telemetry Metrics Grid -->
+              <section class="glass-panel">
+                <div class="panel-header">
+                  <div class="panel-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    Biometric & Fatigue Metrics
+                  </div>
+                  <span class="panel-badge badge-live">AI VISION STREAM</span>
+                </div>
+
+                <div class="panel-body">
+                  <div class="telemetry-grid">
+                    <div class="metric-box">
+                      <span class="metric-label">Eye Aspect Ratio (EAR)</span>
+                      <span class="metric-value" id="valEar">0.32</span>
+                      <span class="metric-sub">Threshold &lt; 0.20 Drowsy</span>
+                    </div>
+
+                    <div class="metric-box">
+                      <span class="metric-label">Blink Frequency</span>
+                      <span class="metric-value" id="valBlinks">14 /min</span>
+                      <span class="metric-sub">Normal Range: 10 - 20</span>
+                    </div>
+
+                    <div class="metric-box">
+                      <span class="metric-label">Fatigue Score</span>
+                      <span class="metric-value" id="valFatigue">12%</span>
+                      <span class="metric-sub">Risk Index 0 - 100</span>
+                    </div>
+
+                    <div class="metric-box">
+                      <span class="metric-label">Head Pose Orientation</span>
+                      <span class="metric-value" id="valHeadPose" style="font-size: 0.88rem;">Centered (0°)</span>
+                      <span class="metric-sub">Distraction Vector</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Vehicle Hardware CAN-Bus Card -->
+              <section class="glass-panel">
+                <div class="panel-header">
+                  <div class="panel-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                    Vehicle CAN-Bus Hardware
+                  </div>
+                  <span class="panel-badge badge-live">CAN-BUS LINKED</span>
+                </div>
+
+                <div class="panel-body">
+                  <div class="telemetry-grid">
+                    <div class="metric-box">
+                      <span class="metric-label">Cruising Speed</span>
+                      <span class="metric-value" id="valBusSpeed">54 km/h</span>
+                      <span class="metric-sub">Limit: 70 km/h</span>
+                    </div>
+
+                    <div class="metric-box">
+                      <span class="metric-label">Fuel Reservoir</span>
+                      <span class="metric-value">78%</span>
+                      <span class="metric-sub">Range: 380 km</span>
+                    </div>
+
+                    <div class="metric-box">
+                      <span class="metric-label">Engine Temp</span>
+                      <span class="metric-value">86° C</span>
+                      <span class="metric-sub">Nominal Range</span>
+                    </div>
+
+                    <div class="metric-box">
+                      <span class="metric-label">Passenger Onboard</span>
+                      <span class="metric-value">34 / 45</span>
+                      <span class="metric-sub">Seat Sensor Matrix</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ===============================================================
+             SCREEN 4: ROUTE PLANNING
+             =============================================================== -->
+        <div class="app-screen" id="screen-routes">
+          <div class="screen-header-bar">
+            <div class="screen-title-group">
+              <h2>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                Interactive Route Planning & Safety Comparison
+              </h2>
+              <div class="screen-subtitle">Compare alternative transit corridors with distance, estimated duration, and multi-factor safety scores</div>
+            </div>
+            <span class="panel-badge badge-simulated">[SIMULATED SAFETY METRICS]</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 440px 1fr; gap: 20px;">
+            
+            <!-- Left Column: Origin & Destination Inputs -->
+            <section class="glass-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+                  Corridor Configuration
+                </div>
+                <span class="panel-badge badge-live">INPUT</span>
+              </div>
+
+              <div class="panel-body">
+                <div class="route-planner-box">
+                  <div class="route-input-group">
+                    <div class="input-with-icon">
+                      <span class="input-icon">🟢</span>
+                      <input type="text" id="inputOrigin" class="route-text-input" value="Metro Central Bus Terminal (Gate 4)" placeholder="Enter Starting Origin...">
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 4px;">
+                      <span style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">TRANSIT CORRIDOR</span>
+                      <button id="btnSwapLocations" class="btn btn-glass btn-sm" style="padding: 2px 8px; font-size: 0.7rem;" title="Swap origin and destination">⇅ SWAP</button>
+                    </div>
+
+                    <div class="input-with-icon">
+                      <span class="input-icon">🏁</span>
+                      <input type="text" id="inputDestination" class="route-text-input" value="Northern Regional Hub Depot" placeholder="Enter Target Destination...">
+                    </div>
+                  </div>
+
+                  <!-- Quick Presets -->
+                  <div style="margin-top: 6px;">
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">PRESET CORRIDORS:</div>
+                    <div class="quick-preset-chips">
+                      <span class="preset-chip" data-origin="Metro Central Terminal" data-dest="Northern Regional Hub">Metro ➔ North Hub (NH-44)</span>
+                      <span class="preset-chip" data-origin="Depot Bay 4" data-dest="Scenic Bypass Terminal">Depot 4 ➔ Scenic Bypass (SH-12)</span>
+                      <span class="preset-chip" data-origin="Airport Express Bay" data-dest="Mountain Crest Station">Airport ➔ Mountain Pass</span>
+                    </div>
+                  </div>
+
+                  <!-- Stale Data Checkbox Simulator -->
+                  <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-subtle); padding-top: 10px; margin-top: 6px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--text-secondary); cursor: pointer;">
+                      <input type="checkbox" id="chkStaleData" style="accent-color: var(--cyan-primary);">
+                      <span>Simulate Sensor Feed Degraded (+15 uncertainty penalty)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Scoring Formula Reference Card -->
+                <div style="background: rgba(10, 15, 26, 0.55); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; font-size: 0.76rem; color: var(--text-secondary); line-height: 1.5;">
+                  <div style="font-weight: 700; color: #FFF; margin-bottom: 4px;">Weighted Scoring Methodology:</div>
+                  <div>Base: 100 points</div>
+                  <div>• Weather Penalty: max 30 pts</div>
+                  <div>• Road Condition: max 25 pts</div>
+                  <div>• Traffic Congestion: max 25 pts</div>
+                  <div>• Active Hazards: max 25 pts</div>
+                  <div>• Emergency Bonus: up to +10 pts</div>
+                  <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">Higher scores indicate lower estimated transit risk.</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Right Column: Route Alternatives Comparison Cards -->
+            <section class="glass-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                  Route Alternatives Comparison
+                </div>
+                <span class="panel-badge badge-live">SELECTABLE</span>
+              </div>
+
+              <div class="panel-body">
+                <div id="routeAlternativesContainer" class="route-alternatives-container">
+                  <!-- Rendered dynamically by route-safety.js -->
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </div>
+
+        <!-- ===============================================================
+             SCREEN 5: WEATHER & ROAD HAZARDS
+             =============================================================== -->
+        <div class="app-screen" id="screen-weather">
+          <div class="screen-header-bar">
+            <div class="screen-title-group">
+              <h2>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2.2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+                Weather & Road Hazards Simulation
+              </h2>
+              <div class="screen-subtitle">Simulate real-time rainfall, visibility fog, lowland flooding, and traffic bottlenecks</div>
+            </div>
+            <span class="panel-badge badge-simulated">LIVE SENSOR STREAM</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            
+            <!-- Left Column: Current Weather & Road Panels -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              <section class="glass-panel">
+                <div class="panel-header">
+                  <div class="panel-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><path d="M12 2v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="M20 12h2"/><path d="m19.07 4.93-1.41 1.41"/><path d="M15.95 11.05a4 4 0 1 0-7.9 0"/><path d="M12 18v4"/><path d="M8 22h8"/></svg>
+                    Corridor Weather Telemetry
+                  </div>
+                  <span class="panel-badge badge-live">ACTIVE SENSORS</span>
+                </div>
+
+                <div class="panel-body">
+                  <div class="weather-grid">
+                    <div class="weather-stat-box">
+                      <span class="title">Rainfall Rate</span>
+                      <span class="value" id="weatherStatRain">2.4 mm/h</span>
+                    </div>
+
+                    <div class="weather-stat-box">
+                      <span class="title">Visibility</span>
+                      <span class="value" id="weatherStatVis">4800 m</span>
+                    </div>
+
+                    <div class="weather-stat-box">
+                      <span class="title">Flooding Risk</span>
+                      <span class="value" id="weatherStatFlood" style="color: #34D399; font-size: 0.95rem;">LOW RISK</span>
+                    </div>
+
+                    <div class="weather-stat-box">
+                      <span class="title">Road Closures</span>
+                      <span class="value" id="weatherStatClosures">0 active</span>
+                    </div>
+
+                    <div class="weather-stat-box">
+                      <span class="title">Traffic Congestion</span>
+                      <span class="value" id="weatherStatTraffic">35%</span>
+                    </div>
+
+                    <div class="weather-stat-box">
+                      <span class="title">Pavement Status</span>
+                      <span class="value" id="weatherStatSurface" style="font-size: 0.9rem;">Grade A</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Dynamic Simulation Scenarios Selector -->
+              <section class="glass-panel">
+                <div class="panel-header">
+                  <div class="panel-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
+                    Hazard Scenarios
+                  </div>
+                  <span class="panel-badge badge-simulated">BENCHMARK PRESETS</span>
+                </div>
+
+                <div class="panel-body">
+                  <div class="scenario-chips">
+                    <button class="scenario-btn active" data-scenario="monsoon">
+                      ⛈️ <b>Monsoon Storm</b>
+                      <div style="font-size: 0.68rem; color: var(--text-muted);">High rain, lowland flooding on SH-12</div>
+                    </button>
+
+                    <button class="scenario-btn" data-scenario="clear">
+                      ☀️ <b>Clear Skies</b>
+                      <div style="font-size: 0.68rem; color: var(--text-muted);">Dry pavement, optimal visibility</div>
+                    </button>
+
+                    <button class="scenario-btn" data-scenario="fog">
+                      🌫️ <b>Dense Valley Fog</b>
+                      <div style="font-size: 0.68rem; color: var(--text-muted);">&lt; 400m visibility, mountain hazard</div>
+                    </button>
+
+                    <button class="scenario-btn" data-scenario="gridlock">
+                      🚦 <b>Urban Gridlock</b>
+                      <div style="font-size: 0.68rem; color: var(--text-muted);">88% congestion & construction delay</div>
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Right Column: Interactive Sliders -->
+            <section class="glass-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                  Custom Hazard Parameter Controls
+                </div>
+                <span class="panel-badge badge-live">REAL-TIME RECALC</span>
+              </div>
+
+              <div class="panel-body">
+                <div class="interactive-sliders" style="gap: 16px;">
+                  <div class="slider-group">
+                    <div class="slider-header">
+                      <span>Dynamic Rainfall Rate:</span>
+                      <span class="val" id="valSliderRain">5 mm/h</span>
+                    </div>
+                    <input type="range" id="sliderRain" class="hazard-slider" min="0" max="50" step="1" value="5">
+                  </div>
+
+                  <div class="slider-group">
+                    <div class="slider-header">
+                      <span>Road Visibility:</span>
+                      <span class="val" id="valSliderVis">3500 m</span>
+                    </div>
+                    <input type="range" id="sliderVisibility" class="hazard-slider" min="200" max="5000" step="100" value="3500">
+                  </div>
+
+                  <div class="slider-group">
+                    <div class="slider-header">
+                      <span>Traffic Congestion:</span>
+                      <span class="val" id="valSliderTraf">30%</span>
+                    </div>
+                    <input type="range" id="sliderTraffic" class="hazard-slider" min="0" max="100" step="5" value="30">
+                  </div>
+
+                  <div class="slider-group">
+                    <div class="slider-header">
+                      <span>Active Route Hazards Count:</span>
+                      <span class="val" id="valSliderHaz">1</span>
+                    </div>
+                    <input type="range" id="sliderHazards" class="hazard-slider" min="0" max="5" step="1" value="1">
+                  </div>
+                </div>
+
+                <div style="background: rgba(10, 15, 26, 0.6); border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: var(--radius-sm); padding: 12px; margin-top: 14px; font-size: 0.76rem; color: var(--text-secondary); line-height: 1.5;">
+                  Adjusting sliders modifies real-time scoring deductions. Navigate to the <b>Route Planning</b> or <b>Live GPS</b> screen to observe how route scores and map hazards dynamically respond.
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </div>
+
+        <!-- ===============================================================
+             SCREEN 6: INCIDENTS & REPORTS
+             =============================================================== -->
+        <div class="app-screen" id="screen-incidents">
+          <div class="screen-header-bar">
+            <div class="screen-title-group">
+              <h2>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                Incidents & Audit Reports
+              </h2>
+              <div class="screen-subtitle">Comprehensive safety event logs, driver acknowledgments, hazard advisories, and CSV spreadsheet exports</div>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button id="btnExportCsv" class="btn btn-glass btn-sm" title="Export Incident Log as CSV spreadsheet">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export CSV
+              </button>
+              <button id="btnClearLogs" class="btn btn-glass btn-sm" title="Clear log history">Clear Logs</button>
+            </div>
+          </div>
+
+          <!-- Main Incident Audit Table -->
+          <section class="glass-panel" style="margin-bottom: 24px;">
+            <div class="panel-header">
+              <div class="panel-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                Fleet Incident Audit Log
+              </div>
+
+              <!-- Filter chips -->
+              <div style="display: flex; gap: 6px;">
+                <button class="filter-log-btn preset-chip active" data-filter="ALL">ALL</button>
+                <button class="filter-log-btn preset-chip" data-filter="EMERGENCY">EMERGENCY</button>
+                <button class="filter-log-btn preset-chip" data-filter="WARNING">WARNING</button>
+                <button class="filter-log-btn preset-chip" data-filter="INFO">INFO</button>
+              </div>
+            </div>
+
+            <div class="panel-body">
+              <div class="incident-table-wrapper" style="max-height: 380px;">
+                <table class="incident-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 85px;">Time</th>
+                      <th style="width: 150px;">Event</th>
+                      <th style="width: 95px;">Severity</th>
+                      <th style="width: 140px;">Location</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody id="incidentTableBody">
+                    <!-- Rendered dynamically by incident-logger.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- Driver Recommendations & Protocols Section -->
+          <div class="home-split-row">
+            
+            <!-- Recommendations Card -->
+            <section class="glass-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  Active Driver Advisories
+                </div>
+                <span class="panel-badge badge-warn">ADVISORY ONLY</span>
+              </div>
+
+              <div class="panel-body">
+                <div class="driver-advisory-card">
+                  <div id="driverAdvisoriesContainer" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Rendered dynamically by route-safety.js -->
+                  </div>
+
+                  <div class="advisory-disclaimer-pill">
+                    <b>Driver Safety Notice:</b> Suggestions are for dispatch planning only. Drivers must NEVER interact with screens while driving. Recommendations are subordinate to official traffic laws, road signs, and human visual assessment.
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- External Integrations & System Compliance Card -->
+            <section class="glass-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  Protocols & Architecture Access
+                </div>
+                <span class="panel-badge badge-simulated">DOCS</span>
+              </div>
+
+              <div class="panel-body">
+                <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
+                  SENTINEL AI incorporates transparent scoring algorithms, simulated CAN-Bus vehicle telemetry, and zero external paid API dependencies.
+                </p>
+
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+                  <button class="btn btn-glass" style="justify-content: flex-start;" onclick="document.getElementById('modalApiGuide').classList.add('active');">
+                    <span style="font-size: 1.1rem;">🌐</span> Open External API & Hardware Adapter Guide
+                  </button>
+
+                  <button class="btn btn-glass" style="justify-content: flex-start;" onclick="document.getElementById('modalDisclaimers').classList.add('active');">
+                    <span style="font-size: 1.1rem;">⚖️</span> View Safety Protocols & Legal Disclaimers
+                  </button>
+                </div>
+              </div>
+            </section>
+
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       MODAL: EXTERNAL SERVICES & API INTEGRATION GUIDE
+       =================================================================== -->
+  <div id="modalApiGuide" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div style="font-weight: 700; font-size: 1.05rem; color: var(--cyan-primary); display: flex; align-items: center; gap: 8px;">
+          <span>🌐</span> External API Integration & Hardware Adapter Guide
+        </div>
+        <button id="btnCloseApiModal" class="btn btn-glass btn-sm" onclick="document.getElementById('modalApiGuide').classList.remove('active')">✕</button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
+        <p>
+          <b>Current Prototype Mode:</b> All route scores, weather feeds, and bus markers are currently operating via 
+          <span style="color: var(--cyan-primary); font-weight: 700;">Simulated Benchmark Datasets</span>. No paid external API keys are required for full testing.
+        </p>
+
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px;">
+          <div style="font-weight: 700; color: #FFF; margin-bottom: 6px;">How Real Production Services Connect:</div>
+          <ul style="padding-left: 20px; font-size: 0.82rem; line-height: 1.6;">
+            <li><b>Live Weather Services:</b> Integrate <code style="color: var(--cyan-primary);">OpenWeatherMap OneCall 3.0</code> or <code style="color: var(--cyan-primary);">Tomorrow.io API</code> in <code style="color: #F8FAFC;">js/api-service.js</code> to ingest real-time precipitation and visibility radar.</li>
+            <li><b>Road Traffic & Closures:</b> Connect <code style="color: var(--cyan-primary);">TomTom Traffic Flow & Incidents API</code> or <code style="color: var(--cyan-primary);">HERE Routing API</code> to stream real-time congestion and culvert hazard updates.</li>
+            <li><b>Real Bus GPS Telemetry:</b> Ingest standard <code style="color: var(--cyan-primary);">NMEA 0183 ($GPRMC)</code> streams from onboard Teltonika/Concox vehicle hardware via WebSocket.</li>
+            <li><b>Client Device Geolocation:</b> Already supported out of the box via the <code style="color: var(--cyan-primary);">"Acquire Device GPS"</code> button using the HTML5 Geolocation API with user permission.</li>
+          </ul>
+        </div>
+
+        <p style="font-size: 0.78rem; color: var(--text-muted);">
+          <b>Transparency Notice:</b> The system will never fabricate a successful external API connection. Stale or disconnected data feeds trigger an explicit uncertainty penalty in route scoring.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="document.getElementById('modalApiGuide').classList.remove('active')" class="btn btn-cyan btn-sm">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       MODAL: SAFETY PROTOCOLS & COMPLIANCE
+       =================================================================== -->
+  <div id="modalDisclaimers" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div style="font-weight: 700; font-size: 1.05rem; color: var(--amber-warn); display: flex; align-items: center; gap: 8px;">
+          <span>⚖️</span> Safety Protocols & Regulatory Notice
+        </div>
+        <button id="btnCloseDisclaimersModal" class="btn btn-glass btn-sm" onclick="document.getElementById('modalDisclaimers').classList.remove('active')">✕</button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 12px; font-size: 0.84rem;">
+        <div style="padding: 10px; background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--amber-warn); border-radius: 4px;">
+          <b>Advisory Dispatch System Only:</b> This software is an advisory support tool designed for fleet dispatchers, control centre coordinators, and pre-trip route planning.
+        </div>
+        <p>• <b>No Autonomous Control:</b> The system does not claim to control the bus, apply automatic brakes, or steer the vehicle.</p>
+        <p>• <b>Driver Primacy:</b> The driver remains 100% legally and operationally responsible for the safe navigation of the vehicle. All system recommendations are subordinate to actual road signs, traffic police directives, and human visibility.</p>
+        <p>• <b>No In-Transit Distraction:</b> In-cabin drivers must never view, browse, or touch navigation screens while the vehicle is in motion.</p>
+        <p>• <b>Simulated Benchmarks:</b> The prototype uses illustrative simulation routes. It does not present unverified simulated data as real-time highway facts.</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="document.getElementById('modalDisclaimers').classList.remove('active')" class="btn btn-cyan btn-sm">Acknowledge</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts: Local Leaflet JS + ES6 Modules -->
+  <script src="js/leaflet.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

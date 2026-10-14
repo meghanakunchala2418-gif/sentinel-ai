@@ -1,0 +1,19 @@
+{
+  "name": "ai-driver-safety-route-monitoring",
+  "version": "2.0.0",
+  "description": "AI Driver Safety & Bus Emergency Monitoring System with AI-Powered Smart Route Safety & Live GPS Monitoring",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "driver-safety",
+    "route-safety",
+    "drowsiness-detection",
+    "gps-monitoring",
+    "fleet-control"
+  ],
+  "author": "Antigravity AI",
+  "license": "ISC"
+}
